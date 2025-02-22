@@ -110,30 +110,40 @@ class MainActivity : AppCompatActivity() {
         try {
             val jsonObject = JSONObject(response)
 
-            val protein = jsonObject.getJSONObject("Protein").getDouble("value")
-            val proteinUnit = jsonObject.getJSONObject("Protein").getString("unit")
+            // Extract food label
+            val food = jsonObject.getString("food")
 
-            val carbohydrate = jsonObject.getJSONObject("Carbohydrate, by difference").getDouble("value")
-            val carbohydrateUnit = jsonObject.getJSONObject("Carbohydrate, by difference").getString("unit")
+            // Extract nutrient values
+            val proteinObject = jsonObject.getJSONObject("nutrient").getJSONObject("Protein")
+            val protein = proteinObject.getDouble("value")
+            val proteinUnit = proteinObject.getString("unit")
 
-            val fat = jsonObject.getJSONObject("Total lipid (fat)").getDouble("value")
-            val fatUnit = jsonObject.getJSONObject("Total lipid (fat)").getString("unit")
+            val carbohydrateObject = jsonObject.getJSONObject("nutrient").getJSONObject("Carbohydrate, by difference")
+            val carbohydrate = carbohydrateObject.getDouble("value")
+            val carbohydrateUnit = carbohydrateObject.getString("unit")
+
+            val fatObject = jsonObject.getJSONObject("nutrient").getJSONObject("Total lipid (fat)")
+            val fat = fatObject.getDouble("value")
+            val fatUnit = fatObject.getString("unit")
 
             // Log the values to check if they are parsed correctly
+            Log.d("Nutrient Data", "Food: $food")
             Log.d("Nutrient Data", "Protein: $protein $proteinUnit")
             Log.d("Nutrient Data", "Carbohydrate: $carbohydrate $carbohydrateUnit")
             Log.d("Nutrient Data", "Fat: $fat $fatUnit")
 
-            // Show extracted values in a Toast (optional)
+            // Show extracted values in your UI (assuming you have binding setup)
             runOnUiThread {
                 binding.proteinQuantity.text = "$protein $proteinUnit"
                 binding.carbsQuantity.text = "$carbohydrate $carbohydrateUnit"
                 binding.fatQuantity.text = "$fat $fatUnit"
+                binding.caloriesLeft.text = food
             }
 
         } catch (e: Exception) {
-            Log.e("JSON_PARSE_ERROR", "Error parsing response", e)
+            Log.e("JSON_PARSE_ERROR", "General error parsing response", e)
         }
+
     }
 
 }
